@@ -31,7 +31,16 @@
       font-family: 'DM Sans', sans-serif;
       color: var(--text);
       overflow-x: hidden;
-      cursor: default;
+      cursor: none; /* hide default cursor — fire takes over */
+    }
+
+    /* ── FIRE CURSOR CANVAS ── */
+    #fire-cursor-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 99999;
     }
 
     /* ── AMBIENT BACKGROUND ── */
@@ -115,7 +124,6 @@
       pointer-events: none;
     }
 
-    /* horizontal glow line */
     .hero-line {
       width: 1px;
       height: 80px;
@@ -180,7 +188,6 @@
       to   { opacity: 1; width: 60px; }
     }
 
-    /* hero CTA glass pills */
     .hero-ctas {
       display: flex;
       gap: 16px;
@@ -296,7 +303,6 @@
       font-weight: 300;
     }
 
-    /* thin amber rule */
     .rule {
       width: 40px;
       height: 1px;
@@ -324,7 +330,6 @@
       position: relative;
     }
 
-    /* glass top shine */
     .card::before {
       content: '';
       position: absolute;
@@ -362,7 +367,6 @@
       position: relative;
     }
 
-    /* warm overlay on image */
     .card-img-wrap::after {
       content: '';
       position: absolute;
@@ -619,7 +623,6 @@
       transform: translateY(0);
     }
 
-    /* stagger children */
     .stagger .card:nth-child(2) { transition-delay: 0.1s; }
     .stagger .card:nth-child(3) { transition-delay: 0.2s; }
     .stagger .card:nth-child(4) { transition-delay: 0.3s; }
@@ -647,13 +650,15 @@
       .btn-order-sm { width: 100%; justify-content: center; }
     }
 
-    /* scrollbar */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: var(--deep); }
     ::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.3); border-radius: 4px; }
   </style>
 </head>
 <body>
+
+  <!-- FIRE CURSOR CANVAS -->
+  <canvas id="fire-cursor-canvas" aria-hidden="true"></canvas>
 
   <!-- AMBIENT ORBS -->
   <div class="bg-canvas" aria-hidden="true">
@@ -780,7 +785,6 @@
         </div>
 
         <div class="card reveal" style="position:relative;">
-          <!-- "fan favourite" badge -->
           <div style="position:absolute;top:16px;right:16px;z-index:5;background:rgba(245,166,35,0.18);border:1px solid rgba(245,166,35,0.4);backdrop-filter:blur(12px);padding:5px 12px;border-radius:20px;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-light);">Fan Favourite</div>
           <div class="card-img-wrap">
             <img class="card-img" src="https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Mega Kota" />
@@ -983,7 +987,7 @@
   </div>
 
   <script>
-    // scroll reveal
+    // ── SCROLL REVEAL ──
     const reveals = document.querySelectorAll('.reveal');
     const staggerCards = document.querySelectorAll('.stagger .card');
 
@@ -998,11 +1002,9 @@
 
     reveals.forEach(el => io.observe(el));
 
-    // stagger card reveals
     const cardIo = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          // find sibling index within stagger parent
           const siblings = Array.from(e.target.parentElement.querySelectorAll('.card'));
           const idx = siblings.indexOf(e.target);
           setTimeout(() => {
@@ -1020,6 +1022,180 @@
       c.style.transition = 'opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1)';
       cardIo.observe(c);
     });
+
+    // ── FIRE CURSOR ──
+    (function() {
+      const canvas = document.getElementById('fire-cursor-canvas');
+      const ctx = canvas.getContext('2d');
+      let W = canvas.width = window.innerWidth;
+      let H = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      });
+
+      let mx = -500, my = -500;
+      let isMoving = false;
+      let moveTimer;
+
+      window.addEventListener('mousemove', e => {
+        mx = e.clientX;
+        my = e.clientY;
+        isMoving = true;
+        clearTimeout(moveTimer);
+        moveTimer = setTimeout(() => { isMoving = false; }, 100);
+      });
+
+      // ── Flame Particle ──
+      class Flame {
+        constructor(x, y, boost) {
+          this.x = x + (Math.random() - 0.5) * 10;
+          this.y = y + (Math.random() - 0.5) * 4;
+          this.vx = (Math.random() - 0.5) * 1.2;
+          this.vy = -(Math.random() * 3.5 + 1.5);
+          this.life = 1;
+          this.decay = Math.random() * 0.022 + 0.016;
+          this.size = boost
+            ? Math.random() * 20 + 12
+            : Math.random() * 14 + 6;
+          this.initSize = this.size;
+          // colour: deep red core → orange → yellow tip
+          this.hue = Math.random() * 25 + 10; // 10–35 deg
+          this.sat = 95 + Math.random() * 5;
+        }
+        update() {
+          this.x += this.vx + Math.sin(this.life * 8) * 0.3;
+          this.y += this.vy;
+          this.vy -= 0.06;
+          this.vx += (Math.random() - 0.5) * 0.2;
+          this.life -= this.decay;
+          this.size = this.initSize * Math.max(this.life, 0);
+        }
+        draw() {
+          if (this.life <= 0 || this.size < 0.5) return;
+          const a = Math.pow(Math.max(this.life, 0), 1.3);
+          const g = ctx.createRadialGradient(
+            this.x, this.y, 0,
+            this.x, this.y, this.size
+          );
+          // white-yellow core
+          g.addColorStop(0,   `hsla(${this.hue + 40}, 100%, 98%, ${a})`);
+          // vivid orange middle
+          g.addColorStop(0.25,`hsla(${this.hue + 15}, ${this.sat}%, 70%, ${a * 0.9})`);
+          // orange-red
+          g.addColorStop(0.55,`hsla(${this.hue},      ${this.sat}%, 50%, ${a * 0.6})`);
+          // deep red outer
+          g.addColorStop(0.8, `hsla(${this.hue - 10},  80%, 30%, ${a * 0.3})`);
+          // transparent edge
+          g.addColorStop(1,   `hsla(${this.hue - 20},  60%, 15%, 0)`);
+
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+      }
+
+      // ── Ember / Spark ──
+      class Ember {
+        constructor(x, y) {
+          this.x = x + (Math.random() - 0.5) * 12;
+          this.y = y;
+          this.vx = (Math.random() - 0.5) * 4;
+          this.vy = -(Math.random() * 6 + 2);
+          this.life = 1;
+          this.decay = Math.random() * 0.018 + 0.012;
+          this.size = Math.random() * 2 + 0.5;
+          this.hue = Math.random() * 40 + 20;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vy += 0.07;  // gravity
+          this.vx *= 0.97;
+          this.life -= this.decay;
+        }
+        draw() {
+          if (this.life <= 0) return;
+          // twinkle
+          const a = this.life * (0.7 + 0.3 * Math.random());
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, 100%, 85%, ${a})`;
+          ctx.fill();
+        }
+      }
+
+      // ── Glow dot at cursor tip ──
+      class CursorGlow {
+        constructor() { this.x = this.tx = 0; this.y = this.ty = 0; }
+        move(x, y) { this.tx = x; this.ty = y; }
+        update() {
+          this.x += (this.tx - this.x) * 0.4;
+          this.y += (this.ty - this.y) * 0.4;
+        }
+        draw() {
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 12);
+          g.addColorStop(0,   'rgba(255, 255, 200, 0.98)');
+          g.addColorStop(0.35,'rgba(255, 160,  20, 0.85)');
+          g.addColorStop(0.7, 'rgba(220,  60,   0, 0.4)');
+          g.addColorStop(1,   'rgba(180,  20,   0, 0)');
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 12, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+      }
+
+      let flames = [];
+      let embers = [];
+      const glow = new CursorGlow();
+      const MAX_FLAMES = 150;
+      const MAX_EMBERS = 80;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, W, H);
+
+        if (mx > -400) {
+          // Spawn flames
+          const burst = isMoving ? 4 : 2;
+          for (let i = 0; i < burst; i++) {
+            flames.push(new Flame(mx, my, isMoving));
+          }
+          // Occasional embers
+          if (Math.random() < (isMoving ? 0.4 : 0.15)) {
+            embers.push(new Ember(mx, my));
+          }
+        }
+
+        // Cap pools
+        if (flames.length > MAX_FLAMES) flames.splice(0, flames.length - MAX_FLAMES);
+        if (embers.length > MAX_EMBERS) embers.splice(0, embers.length - MAX_EMBERS);
+
+        // Draw embers (below fire)
+        embers = embers.filter(e => e.life > 0);
+        embers.forEach(e => { e.update(); e.draw(); });
+
+        // Draw flames with screen blend for a hot glow
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        flames = flames.filter(f => f.life > 0);
+        flames.forEach(f => { f.update(); f.draw(); });
+        ctx.restore();
+
+        // Cursor tip glow on top
+        glow.move(mx, my);
+        glow.update();
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        glow.draw();
+        ctx.restore();
+      }
+
+      animate();
+    })();
   </script>
 
 </body>
