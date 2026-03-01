@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mimi's Local Chips & Kotas | Tsakane</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --amber: #f5a623;
+      --amber-light: #ffd280;
+      --amber-dim: rgba(245, 166, 35, 0.12);
+      --red: #e84545;
+      --deep: #0a0705;
+      --surface: rgba(255,255,255,0.04);
+      --glass: rgba(255, 255, 255, 0.07);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-shine: rgba(255, 255, 255, 0.18);
+      --text: #f0e8d8;
+      --muted: rgba(240, 232, 216, 0.5);
+      --wa: #25d366;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--deep);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ── AMBIENT BACKGROUND ── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #b35a00, transparent 70%);
+      top: -200px; left: -200px;
+      animation-duration: 22s;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #7c1a1a, transparent 70%);
+      bottom: 10%; right: -150px;
+      animation-duration: 17s;
+      animation-delay: -8s;
+    }
+
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #4a2c00, transparent 70%);
+      top: 40%; left: 30%;
+      animation-duration: 25s;
+      animation-delay: -4s;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* noise grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px;
+      opacity: 0.6;
+    }
+
+    /* ── LAYOUT WRAPPER ── */
+    .page { position: relative; z-index: 2; }
+
+    /* ── HERO HEADER ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 40%, rgba(180, 90, 0, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* horizontal glow line */
+    .hero-line {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--amber), transparent);
+      margin: 0 auto 40px;
+      animation: fadeDown 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    .eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 20px;
+      animation: fadeUp 1s 0.3s ease both;
+      opacity: 0;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      animation: fadeUp 1.2s 0.5s ease both;
+      opacity: 0;
+      margin-bottom: 8px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--amber-light);
+    }
+
+    .hero-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-top: 12px;
+      margin-bottom: 50px;
+      animation: fadeUp 1.2s 0.7s ease both;
+      opacity: 0;
+    }
+
+    .hero-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--amber);
+      margin: 0 auto 50px;
+      animation: expandWidth 1s 0.9s ease both;
+      opacity: 0;
+    }
+
+    @keyframes expandWidth {
+      from { opacity: 0; width: 0; }
+      to   { opacity: 1; width: 60px; }
+    }
+
+    /* hero CTA glass pills */
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 700px;
+      animation: fadeUp 1s 1s ease both;
+      opacity: 0;
+    }
+
+    /* ── GLASS BUTTON BASE ── */
+    .btn-glass {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 40px;
+      border-radius: 60px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: var(--glass);
+      color: var(--text);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .btn-glass::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-glass:hover::before { left: 100%; }
+
+    .btn-glass:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-wa {
+      background: rgba(37, 211, 102, 0.15);
+      border-color: rgba(37, 211, 102, 0.35);
+      color: #7effa0;
+    }
+
+    .btn-wa:hover {
+      background: rgba(37, 211, 102, 0.25);
+      box-shadow: 0 20px 60px rgba(37,211,102,0.15), 0 0 0 1px rgba(37,211,102,0.3);
+    }
+
+    .btn-call {
+      background: rgba(245, 166, 35, 0.12);
+      border-color: rgba(245, 166, 35, 0.3);
+      color: var(--amber-light);
+    }
+
+    .btn-call:hover {
+      background: rgba(245, 166, 35, 0.22);
+      box-shadow: 0 20px 60px rgba(245,166,35,0.12), 0 0 0 1px rgba(245,166,35,0.25);
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 24px;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 70px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--amber-light);
+    }
+
+    .section-caption {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    /* thin amber rule */
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--amber);
+      margin: 20px auto 0;
+    }
+
+    /* ── GLASS CARD ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                  box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                  border-color 0.4s ease;
+      position: relative;
+    }
+
+    /* glass top shine */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
+      z-index: 2;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.01);
+      border-color: rgba(245, 166, 35, 0.3);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(245,166,35,0.15),
+        inset 0 0 60px rgba(245,166,35,0.03);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.75) saturate(0.9);
+      transition: filter 0.5s ease, transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .card:hover .card-img {
+      filter: brightness(0.9) saturate(1.1);
+      transform: scale(1.06);
+    }
+
+    .card-img-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* warm overlay on image */
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,7,5,0.85) 0%, transparent 50%);
+    }
+
+    .card-body {
+      padding: 22px 24px 24px;
+    }
+
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+      min-height: 38px;
+      margin-bottom: 20px;
+    }
+
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--amber);
+      line-height: 1;
+    }
+
+    .card-price span {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-order-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 20px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border: 1px solid rgba(37, 211, 102, 0.3);
+      background: rgba(37, 211, 102, 0.1);
+      color: #7effa0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn-order-sm:hover {
+      background: rgba(37, 211, 102, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37,211,102,0.15);
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .section-sep {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      opacity: 0.2;
+    }
+
+    .section-sep::before, .section-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--amber);
+    }
+
+    .section-sep-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    /* ── QR / ORDER CTA BAND ── */
+    .cta-band {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .cta-glass {
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(30px) saturate(160%);
+      -webkit-backdrop-filter: blur(30px) saturate(160%);
+      padding: 70px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glass::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
+    }
+
+    .cta-glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(180,90,0,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .cta-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    .qr-wrap {
+      display: inline-block;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(20px);
+      margin-bottom: 40px;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .qr-wrap:hover {
+      transform: scale(1.04);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,166,35,0.2);
+    }
+
+    .qr-wrap img {
+      display: block;
+      width: 160px; height: 160px;
+      border-radius: 8px;
+      filter: invert(1) brightness(0.85);
+    }
+
+    /* ── HOURS STRIP ── */
+    .hours-band {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hours-glass {
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 60px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hours-glass::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
+    }
+
+    .hours-time-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 300;
+      color: var(--amber);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .hours-days {
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .footer-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                  transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* stagger children */
+    .stagger .card:nth-child(2) { transition-delay: 0.1s; }
+    .stagger .card:nth-child(3) { transition-delay: 0.2s; }
+    .stagger .card:nth-child(4) { transition-delay: 0.3s; }
+    .stagger .card:nth-child(5) { transition-delay: 0.4s; }
+    .stagger .card:nth-child(6) { transition-delay: 0.5s; }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .hero-ctas { flex-direction: column; align-items: stretch; }
+      .btn-glass { width: 100%; }
+      .cta-glass, .hours-glass { padding: 50px 24px; }
+      .card-foot { flex-direction: column; align-items: flex-start; }
+      .btn-order-sm { width: 100%; justify-content: center; }
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.3); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- AMBIENT ORBS -->
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="page">
+
+    <!-- ══ HERO ══ -->
+    <header class="hero">
+      <div class="hero-line" aria-hidden="true"></div>
+      <p class="eyebrow">Est. Tsakane Township &nbsp;·&nbsp; Since Day One</p>
+      <h1 class="hero-title">Mimi's Local<br><em>Chips & Kotas</em></h1>
+      <p class="hero-sub">📍 Tsakane &nbsp;·&nbsp; 08:00 – 22:00, Every Day</p>
+      <div class="hero-divider" aria-hidden="true"></div>
+      <div class="hero-ctas">
+        <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20place%20an%20order" class="btn-glass btn-wa">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+          Order on WhatsApp
+        </a>
+        <a href="tel:27721234567" class="btn-glass btn-call">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          Call: 072 123 4567
+        </a>
+      </div>
+    </header>
+
+    <!-- ══ KOTAS ══ -->
+    <section class="section">
+      <div class="section-head reveal">
+        <p class="section-label">Signature Specials</p>
+        <h2 class="section-title">Our <em>Kotas</em></h2>
+        <p class="section-caption">Quarter loaf, packed fresh with your choice of fillings</p>
+        <div class="rule"></div>
+      </div>
+
+      <div class="cards-grid stagger">
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Standard Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Standard Kota</h3>
+            <p class="card-desc">Chips, polony & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R35 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Standard%20Kota%20(R35)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Cheese Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Cheese Kota</h3>
+            <p class="card-desc">Chips, polony, melted cheese & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R40 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Cheese%20Kota%20(R40)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1893555/pexels-photo-1893555.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Russian Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Russian Kota</h3>
+            <p class="card-desc">Chips, Russian sausage & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R45 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Russian%20Kota%20(R45)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Deluxe Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Deluxe Kota</h3>
+            <p class="card-desc">Chips, polony, egg, cheese & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R50 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Deluxe%20Kota%20(R50)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Supreme Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Supreme Kota</h3>
+            <p class="card-desc">Chips, Russian, polony, egg, cheese & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R60 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Supreme%20Kota%20(R60)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal" style="position:relative;">
+          <!-- "fan favourite" badge -->
+          <div style="position:absolute;top:16px;right:16px;z-index:5;background:rgba(245,166,35,0.18);border:1px solid rgba(245,166,35,0.4);backdrop-filter:blur(12px);padding:5px 12px;border-radius:20px;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-light);">Fan Favourite</div>
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/2271107/pexels-photo-2271107.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Mega Kota" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Mega Kota</h3>
+            <p class="card-desc">Everything! Chips, Russian, polony, viennas, egg, cheese, atchar & sauce</p>
+            <div class="card-foot">
+              <div class="card-price">R70 <span>/ kota</span></div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Mega%20Kota%20(R70)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-sep"><div class="section-sep-dot"></div></div>
+
+    <!-- ══ CHIPS ══ -->
+    <section class="section">
+      <div class="section-head reveal">
+        <p class="section-label">Fresh Daily</p>
+        <h2 class="section-title"><em>Golden</em> Chips</h2>
+        <p class="section-caption">Crispy, golden, and made fresh every single day</p>
+        <div class="rule"></div>
+      </div>
+
+      <div class="cards-grid stagger">
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1586942/pexels-photo-1586942.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Small Chips" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Small Chips</h3>
+            <p class="card-desc">Perfect for one person</p>
+            <div class="card-foot">
+              <div class="card-price">R15</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20Small%20Chips%20(R15)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Medium Chips" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Medium Chips</h3>
+            <p class="card-desc">Great for sharing</p>
+            <div class="card-foot">
+              <div class="card-price">R25</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20Medium%20Chips%20(R25)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1893556/pexels-photo-1893556.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Large Chips" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Large Chips</h3>
+            <p class="card-desc">Feed the whole family</p>
+            <div class="card-foot">
+              <div class="card-price">R35</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20Large%20Chips%20(R35)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-sep"><div class="section-sep-dot"></div></div>
+
+    <!-- ══ EXTRAS ══ -->
+    <section class="section">
+      <div class="section-head reveal">
+        <p class="section-label">Finish It Off</p>
+        <h2 class="section-title">Add-<em>Ons</em></h2>
+        <p class="section-caption">Elevate your order with these extras</p>
+        <div class="rule"></div>
+      </div>
+
+      <div class="cards-grid stagger">
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/4676401/pexels-photo-4676401.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Single Russian" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Single Russian</h3>
+            <p class="card-desc">Grilled Russian sausage</p>
+            <div class="card-foot">
+              <div class="card-price">R10</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Single%20Russian%20(R10)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Add to Order
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/1639565/pexels-photo-1639565.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Burger Patty" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Burger Patty</h3>
+            <p class="card-desc">Juicy beef patty</p>
+            <div class="card-foot">
+              <div class="card-price">R15</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20a%20Burger%20Patty%20(R15)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Add to Order
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Cheese Slice" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Cheese Slice</h3>
+            <p class="card-desc">Add melted cheese to anything</p>
+            <div class="card-foot">
+              <div class="card-price">R5</div>
+              <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20order%20Cheese%20Slice%20(R5)" class="btn-order-sm">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+                Add to Order
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ QR / CTA BAND ══ -->
+    <div class="cta-band">
+      <div class="cta-glass reveal">
+        <p class="cta-label">Scan & Chat</p>
+        <h2 class="cta-title">One scan.<br>Opens WhatsApp.</h2>
+        <p class="cta-body">Scan the code below — it opens a WhatsApp chat directly with Mimi. Just tell her what you want and she'll sort you out. Or tap the button to chat right now.</p>
+        <div class="qr-wrap">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20place%20an%20order"
+            alt="WhatsApp Order QR Code"
+          />
+        </div>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%;max-width:700px;margin:0 auto;">
+          <a href="https://wa.me/27721234567?text=Hi%20Mimi%2C%20I%20would%20like%20to%20place%20an%20order" class="btn-glass btn-wa">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.1.546 4.07 1.5 5.793L0 24l6.373-1.476A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.574-.486-5.068-1.332l-.362-.214-3.783.876.897-3.693-.233-.379C2.496 15.573 2 13.845 2 12 2 6.478 6.477 2 12 2s10 4.478 10 10-4.477 10-10 10z"/></svg>
+            Order on WhatsApp
+          </a>
+          <a href="tel:27721234567" class="btn-glass btn-call">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            Call: 072 123 4567
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOURS ══ -->
+    <div class="hours-band" style="margin-top:24px;">
+      <div class="hours-glass reveal">
+        <p class="hours-days">Monday – Sunday</p>
+        <div class="hours-time-big">08:00 – 22:00</div>
+        <p style="margin-top:20px;font-size:0.85rem;color:var(--muted);letter-spacing:0.05em;">📍 Tsakane Township &nbsp;·&nbsp; Open Every Day</p>
+        <div style="margin-top:28px;">
+          <a href="tel:27721234567" style="font-size:0.85rem;font-weight:500;color:var(--amber);letter-spacing:0.08em;text-decoration:none;border-bottom:1px solid rgba(245,166,35,0.3);padding-bottom:2px;">
+            📞 072 123 4567
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="footer">
+      <p class="footer-brand">Mimi's Local Chips & Kotas</p>
+      <p class="footer-note">Tsakane Township &nbsp;·&nbsp; Fresh. Fast. Always.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const staggerCards = document.querySelectorAll('.stagger .card');
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => io.observe(el));
+
+    // stagger card reveals
+    const cardIo = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          // find sibling index within stagger parent
+          const siblings = Array.from(e.target.parentElement.querySelectorAll('.card'));
+          const idx = siblings.indexOf(e.target);
+          setTimeout(() => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          }, idx * 80);
+          cardIo.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    staggerCards.forEach(c => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(28px)';
+      c.style.transition = 'opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1)';
+      cardIo.observe(c);
+    });
+  </script>
+
+</body>
+</html>
