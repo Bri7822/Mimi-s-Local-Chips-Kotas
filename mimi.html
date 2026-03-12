@@ -642,6 +642,8 @@
       .cta-glass, .hours-glass { padding: 50px 24px; }
       .card-foot { flex-direction: column; align-items: flex-start; }
       .btn-order-sm { width: 100%; justify-content: center; }
+      body { cursor: auto; }
+      .fire-cursor{ display: none; }
     }
 
     ::-webkit-scrollbar { width: 4px; }
@@ -652,7 +654,7 @@
 <body>
 
   <!-- FIRE CURSOR CANVAS -->
-  <canvas id="fire-cursor-canvas" aria-hidden="true"></canvas>
+  <canvas id="fire-cursor-canvas" class="fire-cursor" aria-hidden="true"></canvas>
 
   <!-- AMBIENT ORBS -->
   <div class="bg-canvas" aria-hidden="true">
