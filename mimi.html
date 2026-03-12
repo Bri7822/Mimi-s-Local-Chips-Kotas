@@ -642,10 +642,12 @@
       .cta-glass, .hours-glass { padding: 50px 24px; }
       .card-foot { flex-direction: column; align-items: flex-start; }
       .btn-order-sm { width: 100%; justify-content: center; }
-      body { cursor: auto; }
-      .fire-cursor{ display: none; }
-    }
 
+    }
+    @media (max-width: 1024px) {
+          body { cursor: auto !important; }
+      .fire-cursor{ display: none !important; }
+    }
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: var(--deep); }
     ::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.3); border-radius: 4px; }
